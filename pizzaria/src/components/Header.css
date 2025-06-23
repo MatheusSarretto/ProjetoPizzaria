@@ -1,0 +1,364 @@
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px;
+  background-color: #f8f8f8;
+  border-bottom: 1px solid #eee;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 999;
+  transition: all 0.3s ease-in-out;
+  height: 80px;
+  box-sizing: border-box;
+}
+
+.header.scrolled {
+  height: 60px;
+  padding: 10px 20px;
+  background-color: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header.scrolled .header-left .logo-link,
+.header.scrolled .header-left .business-info {
+  display: none;
+}
+
+.header .header-left .compact-menu-nav {
+    display: none;
+}
+
+.header.scrolled .header-left {
+    display: flex;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.header.scrolled .header-left .compact-menu-nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo {
+  height: 100px;
+  margin-right: 15px;
+}
+
+.header-left h1 {
+  font-size: 1.8em;
+  color: #333;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.business-info {
+    display: flex;
+    flex-direction: column;
+    font-size: 0.9em;
+    color: #666;
+    gap: 5px;
+    white-space: nowrap;
+    margin-left: 4%;
+}
+
+.business-hours {
+  font-weight: bold;
+  font-size: 1.3em;
+}
+
+.address-info { 
+  font-size: 1em;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+}
+
+.icon-link {
+  margin-left: 25px;
+  position: relative;
+}
+
+.profile-icon {
+  height: 50px;
+  width: 50px;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.profile-icon:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.icon {
+  height: 60px;
+  width: 60px;
+}
+
+.cart-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+}
+
+.cart-info {
+  display: flex;
+  flex-direction: column;
+  margin-left: 10px;
+  font-size: 1.2em;
+  color: #555;
+}
+
+.cart-item-count {
+  font-weight: bold;
+  color: #e44d26;
+}
+
+.cart-total-price {
+  font-weight: bold;
+}
+
+.profile-info-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  gap: 8px;
+}
+
+.profile-text {
+  font-size: 1em;
+  color: #666;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.profile-info-link:hover .profile-text {
+  color: #e44d26;
+}
+
+.compact-menu-nav {
+  align-items: center;
+}
+
+.menu-toggle-button {
+  background: none;
+  border: 1px solid #ddd; 
+  border-radius: 20px;
+  cursor: pointer;
+  padding: 5px 12px;
+  display: flex;
+  align-items: center;
+  height: 40px;
+  margin-right: 15px;
+  min-width: 80px;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.menu-toggle-button:hover {
+  border-color: #e44d26;
+  box-shadow: 0 0 0 2px rgba(228, 77, 38, 0.2);
+}
+
+
+.menu-toggle-button .icon-bar {
+  display: none; 
+}
+
+.current-category-name {
+  font-size: 1.2em;
+  color: #333;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+  text-align: center;
+}
+
+.expanded-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 998;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.expanded-menu {
+  background-color: #fff;
+  width: 280px;
+  height: 100%;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow-y: auto;
+}
+
+.expanded-menu-item {
+  text-decoration: none;
+  color: #333;
+  font-size: 1.1em;
+  padding: 10px 0;
+  border-bottom: 1px solid #eee;
+  transition: color 0.3s ease;
+}
+
+.expanded-menu-item:hover {
+  color: #e44d26;
+}
+
+.compact-search-bar {
+  width: 200px;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  font-size: 0.9em;
+}
+
+
+main {
+    padding-top: 80px;
+}
+.header.scrolled + main { 
+    padding-top: 60px;
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 15px;
+    height: 70px;
+  }
+  .header-left .logo-link {
+    margin-right: 10px;
+  }
+  .header-left h1 {
+    font-size: 1.5em;
+  }
+  .business-info {
+    font-size: 0.8em;
+  }
+  .header-right .icon-link {
+    margin-left: 15px;
+  }
+  .header.scrolled {
+    height: 50px;
+    padding: 8px 15px;
+  }
+  .header.scrolled .header-left {
+    max-width: 100%;
+    margin: 0;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+  .compact-search-bar {
+    width: 150px;
+  }
+  main {
+      padding-top: 70px;
+  }
+  .header.scrolled + main {
+      padding-top: 50px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header-left .logo-link,
+  .header-left .business-info {
+    display: none;
+  }
+  .header-left .compact-menu-nav {
+      display: flex;
+  }
+  .header {
+      justify-content: space-between;
+      height: 60px;
+      padding: 10px;
+  }
+  .header.scrolled {
+    height: 60px;
+    padding: 10px;
+  }
+  .header.scrolled .header-left {
+    justify-content: space-between;
+  }
+  main {
+      padding-top: 60px;
+  }
+  .header.scrolled + main {
+      padding-top: 60px;
+  }
+  .compact-search-bar {
+    width: 100px;
+  }
+  .header-right {
+    gap: 10px;
+  }
+  .header-right .icon-link {
+    margin-left: 10px;
+  }
+  .profile-text, .cart-item-count, .cart-total-price {
+    font-size: 0.8em;
+  }
+  .header.scrolled .profile-text {
+      display: none;
+  }
+  .current-category-name {
+    max-width: 80px;
+  }
+  .compact-search-bar {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.header.scrolled .header-left .logo-link,
+.header.scrolled .header-left .business-info {
+  display: none;
+}
+
+.header .header-left .compact-menu-nav {
+    display: none;
+}
+
+.header.scrolled .header-left .compact-menu-nav {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-grow: 1;
+    justify-content: flex-start;
+}
+

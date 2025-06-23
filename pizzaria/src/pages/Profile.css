@@ -1,0 +1,159 @@
+
+.profile-dashboard-container {
+  display: flex;
+  flex-direction: column;
+  max-width: 1200px;
+  margin: 40px auto;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+}
+
+.profile-header-info {
+  text-align: center;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #eee;
+  margin-bottom: 30px;
+}
+
+.profile-header-info h2 {
+  font-size: 2.5em;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.profile-header-info p {
+  font-size: 1em;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.logout-button {
+  padding: 10px 20px;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1em;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 20px;
+}
+
+.logout-button:hover {
+  background-color: #c82333;
+}
+
+.profile-content-area {
+  display: flex;
+  flex-direction: row;
+  gap: 30px;
+}
+
+.profile-sidebar-menu {
+  flex-shrink: 0;
+  width: 250px;
+  background-color: #f8f8f8;
+  border-radius: 8px;
+  padding: 20px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.profile-sidebar-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.profile-sidebar-menu li {
+  margin-bottom: 5px;
+}
+
+.profile-sidebar-menu a {
+  display: block;
+  padding: 12px 20px;
+  text-decoration: none;
+  color: #555;
+  font-size: 1.1em;
+  font-weight: 500;
+  border-left: 5px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.profile-sidebar-menu a:hover {
+  background-color: #eee;
+  color: #e44d26;
+}
+
+.profile-sidebar-menu a.active {
+  background-color: #ffe8e0;
+  color: #e44d26;
+  border-left-color: #e44d26;
+  font-weight: bold;
+}
+
+.profile-details-view {
+  flex-grow: 1;
+  background-color: #fcfcfc;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  min-height: 400px;
+}
+
+.profile-welcome-message {
+  text-align: center;
+  padding: 50px;
+  color: #777;
+}
+
+.profile-welcome-message h3 {
+  font-size: 1.8em;
+  margin-bottom: 15px;
+  color: #555;
+}
+
+@media (max-width: 992px) {
+  .profile-dashboard-container {
+    padding: 20px;
+    margin: 20px auto;
+  }
+  .profile-content-area {
+    flex-direction: column;
+  }
+  .profile-sidebar-menu {
+    width: 100%;
+    padding: 10px 0;
+  }
+  .profile-sidebar-menu ul {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .profile-sidebar-menu li {
+    margin: 5px;
+  }
+  .profile-sidebar-menu a {
+    border-left: none;
+    border-bottom: 3px solid transparent;
+  }
+  .profile-sidebar-menu a.active {
+    border-left-color: transparent;
+    border-bottom-color: #e44d26;
+  }
+  .profile-details-view {
+    padding: 20px;
+  }
+}
+
+@media (max-width: 600px) {
+  .profile-header-info h2 {
+    font-size: 2em;
+  }
+  .profile-sidebar-menu a {
+    font-size: 1em;
+    padding: 10px 15px;
+  }
+}

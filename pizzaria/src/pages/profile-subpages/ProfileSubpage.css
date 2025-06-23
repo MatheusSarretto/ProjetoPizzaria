@@ -1,0 +1,269 @@
+
+.profile-subpage-content {
+  padding: 20px;
+  border-radius: 8px;
+}
+
+.profile-subpage-content h3 {
+  font-size: 2em;
+  color: #333;
+  margin-bottom: 25px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 10px;
+}
+
+.profile-subpage-content p {
+  font-size: 1.1em;
+  color: #666;
+  line-height: 1.6;
+}
+
+.profile-subpage-content .form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.profile-subpage-content label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #555;
+}
+
+.profile-subpage-content input[type="text"],
+.profile-subpage-content input[type="email"],
+.profile-subpage-content input[type="password"],
+.profile-subpage-content select {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1em;
+    box-sizing: border-box;
+}
+
+.profile-subpage-content input:focus,
+.profile-subpage-content select:focus {
+    outline: none;
+    border-color: #e44d26;
+    box-shadow: 0 0 0 3px rgba(228, 77, 38, 0.2);
+}
+
+.profile-subpage-content .submit-button {
+    background-color: #e44d26;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    margin-top: 15px;
+    margin-right: 10px;
+}
+
+.profile-subpage-content .submit-button:hover {
+    background-color: #c0392b;
+}
+
+.profile-subpage-content .message-info {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 0.9em;
+}
+
+.profile-subpage-content .message-info.success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.profile-subpage-content .message-info.error {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.addresses-list, .cards-list {
+    margin-top: 25px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.address-card, .card-item-card {
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 20px;
+    background-color: #fcfcfc;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.address-card h4, .card-item-card h4 {
+    font-size: 1.2em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.address-card p, .card-item-card p {
+    font-size: 0.95em;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.card-actions {
+    margin-top: 15px;
+    text-align: right;
+}
+.address-card .card-actions button {
+    margin-left: 10px;
+}
+
+.edit-button, .delete-button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+.edit-button {
+    background-color: #007bff;
+    color: white;
+}
+.edit-button:hover {
+    background-color: #0056b3;
+}
+
+.delete-button {
+    background-color: #dc3545;
+    color: white;
+}
+.delete-button:hover {
+    background-color: #c82333;
+}
+
+.loyalty-programs h4 {
+    font-size: 1.4em;
+    color: #444;
+    margin-top: 30px;
+    margin-bottom: 20px;
+}
+
+.coupons-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.coupon-card {
+    background-color: #fefefe;
+    border: 1px dashed #ccc;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+}
+
+.coupon-card:hover:not(.redeemed) {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.coupon-card.redeemed {
+    opacity: 0.7;
+    background-color: #f0f0f0;
+    border-style: solid;
+    border-color: #d4edda;
+}
+
+.coupon-details {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.coupon-value {
+    font-size: 1.8em;
+    font-weight: bold;
+    color: #e44d26;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.coupon-description {
+    font-size: 0.9em;
+    color: #666;
+}
+
+.redeem-coupon-button {
+    background-color: #28a745;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s ease;
+}
+
+.redeem-coupon-button:hover {
+    background-color: #218838;
+}
+
+.redeemed-status {
+    font-size: 1em;
+    font-weight: bold;
+    color: #28a745;
+    background-color: #d4edda;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.orders-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+.order-item-card {
+  border: 1px solid #eee;
+  border-radius: 8px;
+  padding: 20px;
+  background-color: #fcfcfc;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+.order-item-card h4 {
+  font-size: 1.3em;
+  color: #333;
+  margin-bottom: 10px;
+}
+.order-item-card p {
+  font-size: 0.95em;
+  color: #666;
+  margin-bottom: 8px;
+}
+.order-item-card ul {
+  list-style: none;
+  padding: 0;
+  margin-left: 0; 
+  margin-bottom: 10px;
+}
+.order-item-card li {
+  font-size: 0.95em;
+  color: #444;
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+
+.order-item-detail {
+    border-bottom: 1px dashed #eee;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+}
+.order-item-detail:last-child {
+    border-bottom: none; 
+}

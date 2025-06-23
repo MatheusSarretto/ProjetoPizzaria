@@ -1,0 +1,225 @@
+
+.admin-container {
+  padding: 40px;
+  max-width: 1200px;
+  margin: 40px auto;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.admin-container h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 40px;
+  font-size: 2.5em;
+}
+
+.error-message {
+  color: #dc3545;
+  background-color: #f8d7da;
+  border: 1px solid #f5c6cb;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 20px;
+  font-size: 0.95em;
+  text-align: center;
+}
+
+.admin-access-denied {
+  text-align: center;
+  padding: 80px 20px;
+  background-color: #ffe0e0;
+  border: 1px solid #ffb3b3;
+  border-radius: 10px;
+  max-width: 600px;
+  margin: 80px auto;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.admin-access-denied h2 {
+  color: #dc3545;
+  margin-bottom: 20px;
+}
+
+.admin-access-denied p {
+  color: #666;
+  font-size: 1.1em;
+  margin-bottom: 30px;
+}
+
+.admin-access-denied button {
+  background-color: #e44d26;
+  color: white;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.admin-access-denied button:hover {
+  background-color: #c0392b;
+}
+
+.product-form-section {
+  background-color: #f9f9f9;
+  padding: 30px;
+  border-radius: 8px;
+  margin-bottom: 40px;
+  border: 1px solid #eee;
+}
+
+.product-form-section h3 {
+  text-align: center;
+  font-size: 1.8em;
+  color: #444;
+  margin-bottom: 25px;
+}
+
+.product-form .form-group {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+.product-form label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+  color: #555;
+}
+
+.product-form input[type="text"],
+.product-form input[type="number"],
+.product-form textarea {
+  width: calc(100% - 20px);
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  font-size: 1em;
+  box-sizing: border-box;
+}
+
+.product-form textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+.product-form input:focus,
+.product-form textarea:focus {
+  outline: none;
+  border-color: #e44d26;
+  box-shadow: 0 0 0 3px rgba(228, 77, 38, 0.2);
+}
+
+.action-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  margin-right: 10px;
+  margin-top: 15px;
+}
+
+.action-button.primary {
+  background-color: #e44d26;
+  color: white;
+}
+
+.action-button.primary:hover {
+  background-color: #c0392b;
+  transform: translateY(-2px);
+}
+
+.action-button.secondary {
+  background-color: #6c757d;
+  color: white;
+}
+
+.action-button.secondary:hover {
+  background-color: #5a6268;
+  transform: translateY(-2px);
+}
+
+.product-list-section h3 {
+  text-align: center;
+  font-size: 1.8em;
+  color: #444;
+  margin-bottom: 25px;
+}
+
+.products-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.products-table th,
+.products-table td {
+  border: 1px solid #ddd;
+  padding: 12px;
+  text-align: left;
+}
+
+.products-table th {
+  background-color: #f2f2f2;
+  font-weight: bold;
+  color: #333;
+}
+
+.products-table tbody tr:nth-child(even) {
+  background-color: #f8f8f8;
+}
+
+.products-table tbody tr:hover {
+  background-color: #f0f0f0;
+}
+
+.action-button.edit {
+  background-color: #007bff;
+  color: white;
+  margin-right: 5px;
+}
+
+.action-button.edit:hover {
+  background-color: #0056b3;
+}
+
+.action-button.delete {
+  background-color: #dc3545;
+  color: white;
+}
+
+.action-button.delete:hover {
+  background-color: #c82333;
+}
+
+@media (max-width: 992px) {
+  .products-table, .product-list-section {
+    overflow-x: auto;
+  }
+  .products-table {
+    display: block; 
+    white-space: nowrap; 
+  }
+}
+
+@media (max-width: 768px) {
+  .admin-container {
+    padding: 20px;
+    margin: 20px auto;
+  }
+  .admin-container h2 {
+    font-size: 2em;
+  }
+  .product-form-section, .product-list-section {
+    padding: 20px;
+  }
+  .action-button {
+    width: calc(100% - 10px);
+    margin-bottom: 10px;
+  }
+}

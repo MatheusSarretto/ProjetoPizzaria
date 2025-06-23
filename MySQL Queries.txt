@@ -1,0 +1,160 @@
+CREATE DATABASE pizzaria_db;
+
+USE pizzaria_db;
+
+CREATE TABLE products (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    ingredients TEXT,
+    price DECIMAL(10, 2) NOT NULL,
+    category VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    cpf VARCHAR(14) NOT NULL UNIQUE,
+    cellphone VARCHAR(15) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    role VARCHAR(50) DEFAULT 'user',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE addresses (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    nickname VARCHAR(100) NOT NULL, 
+    street VARCHAR(255) NOT NULL,
+    number VARCHAR(20) NOT NULL,
+    complement VARCHAR(100), 
+    neighborhood VARCHAR(100) NOT NULL,
+    city VARCHAR(100) NOT NULL,
+    state VARCHAR(2) NOT NULL,
+    zip_code VARCHAR(9) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE cards (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    nickname VARCHAR(100),
+    last_four_digits VARCHAR(4) NOT NULL,
+    brand VARCHAR(50) NOT NULL,
+    cardholder_name VARCHAR(255) NOT NULL,
+    gateway_token VARCHAR(255) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    address_id INT NOT NULL,
+    total_price DECIMAL(10, 2) NOT NULL,
+    payment_method VARCHAR(50) NOT NULL,
+    status VARCHAR(50) NOT NULL DEFAULT 'pending',
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (address_id) REFERENCES addresses(id)
+);
+
+CREATE TABLE order_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id INT NOT NULL,
+    product_id INT NOT NULL,
+    item_price DECIMAL(10, 2) NOT NULL,
+    quantity INT NOT NULL,
+    item_flavors TEXT,
+    item_size VARCHAR(20),
+    item_border_flavor VARCHAR(30),
+    item_observations TEXT,
+    FOREIGN KEY (order_id) REFERENCES orders(id),
+    FOREIGN KEY (product_id) REFERENCES products(id)
+);
+
+CREATE TABLE coupons (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    code VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(255) NOT NULL,
+    type ENUM('percentage', 'fixed', 'free_item') NOT NULL,
+    value DECIMAL(10, 2) NOT NULL,
+    target_item_category VARCHAR(100) NULL,
+    purchases_required INT NULL,
+    max_uses INT NULL,
+    expires_at DATETIME NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE customer_loyalty (
+    user_id INT NOT NULL PRIMARY KEY,
+    purchases_count INT NOT NULL DEFAULT 0,
+    fidelidade30_available BOOLEAN NOT NULL DEFAULT FALSE,
+    brotogratis_available BOOLEAN NOT NULL DEFAULT FALSE,
+    last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-------------------------------------------
+
+
+INSERT INTO products (name, description, price, category) VALUES
+('Calabresa', 'Calabresa fatiada e cebola', 47.99, 'tradicionais'),
+('Mussarela', 'Mussarela e orégano', 47.99, 'tradicionais'),
+('Marguerita', 'Mussarela, tomate, manjericão e parmesão', 52.99, 'tradicionais'),
+('Portuguesa', 'Presunto, ovos, cebola e mussarela', 62.99, 'tradicionais'),
+('Quatro Queijos', 'Mussarela, catupiry, provolone e parmesão', 69.99, 'tradicionais'),
+('Frango com Catupiry', 'Frango desfiado e catupiry', 62.99, 'tradicionais'),
+('Peperoni', 'Mussarela e peperoni', 57.99, 'tradicionais'),
+('Catu-bresa', 'Calabresa fatiada e catupiry', 64.99, 'tradicionais'),
+('Dois Queijos', 'Mussarela e catupiry', 55.99, 'tradicionais'),
+('Três Queijos', 'Mussarela, catupiry e provolone', 59.99, 'tradicionais'),
+('Atum', 'Atum e cebola', 64.99, 'tradicionais'),
+('Peruana', 'Atum, cebola e mussarela', 69.99, 'tradicionais'),
+('Brócolis', 'Brócolis, bacon e mussarela', 64.99, 'tradicionais'),
+('Bacon', 'Bacon e mussarela', 61.99, 'tradicionais'),
+('Carne Seca', 'Carne seca e mussarela', 66.99, 'tradicionais'),
+('Baiana', 'Calabresa moída, pimenta e cebola', 49.99, 'tradicionais'),
+('Escarola', 'Escarola e mussarela', 52.99, 'tradicionais'),
+('Palmito', 'Mussarela e palmito', 64.99, 'tradicionais'),
+('Lombinho', 'Lombo, ovo, cebola e catupiry', 69.99, 'tradicionais'),
+('Vegetariana', 'Palmito, champignon, ervilha, milho e cebola', 69.99, 'tradicionais'),
+('Salgueiro', 'Calabresa, mussarela, lombo e bacon', 69.99, 'tradicionais'),
+('Chocolate', 'Chocolate ao leite e cereja', 54.99, 'doces'),
+('Brigadeiro', 'Chocolate ao leite e granulado', 54.99, 'doces'),
+('Morango com Chocolate', 'Chocolate ao leite e morango', 54.99, 'doces'),
+('Banana com Chocolate', 'Chocolate ao leite e banana', 54.99, 'doces'),
+('Banana', 'Banana, Leite condensado e canela', 47.99, 'doces'),
+('Romeu e Julieta', 'Mussarela e goiabada', 54.99, 'doces'),
+('Mesclada', 'Chocolate branco e chocolate preto', 54.99, 'doces'),
+('Chocolate Branco', 'Chocolate branco ao leite e cereja', 54.99, 'doces'),
+('Prestígio', 'Chocolate preto ao leite e coco ralado', 54.99, 'doces'),
+('M&Ms', 'Chocolate ao leite e m&ms', 54.99, 'doces'),
+('Doce de Leite com Banana', 'Doce de leite com banana', 54.99, 'doces'),
+('Água Crystal 1,5L', 'Água sem gás', 7.99, 'bebidas'),
+('Água Mineral 500ml', 'Água sem gás', 4.00, 'bebidas'),
+('Energético Red Bull 250ml', 'Energético', 14.99, 'bebidas'),
+('Energético Monster Energy 473ml', 'Energético', 14.99, 'bebidas'),
+('Guaraná Lata', 'Lata de refrigerante', 6.99, 'bebidas'),
+('Coca-Cola Lata', 'Lata de refrigerante', 6.99, 'bebidas'),
+('Coca-Cola Zero Lata', 'Lata de refrigerante', 6.99, 'bebidas'),
+('Fanta Laranja Lata', 'Lata de refrigerante', 6.99, 'bebidas'),
+('Coca-Cola 600ml', 'Refrigerante 600ml', 9.99, 'bebidas'),
+('Coca-Cola Zero 600ml', 'Refrigerante 600ml', 9.99, 'bebidas'),
+('Guaraná 600ml', 'Refrigerante 600ml', 9.99, 'bebidas'),
+('Fanta Laranja 600ml', 'Refrigerante 600ml', 9.99, 'bebidas'),
+('Coca-Cola 2 Litros', 'Refrigerante 2L', 18.99, 'bebidas'),
+('Coca-Cola Zero 2 Litros', 'Refrigerante 2L', 18.99, 'bebidas'),
+('Guaraná 2 Litros', 'Refrigerante 2L', 15.99, 'bebidas'),
+('Fanta Laranja 2 Litros', 'Refrigerante 2L', 15.99, 'bebidas');
+
+
+INSERT INTO coupons (code, description, type, value, is_active) VALUES
+('BOMNOITE10', '10% de desconto para seu primeiro pedido no site!', 'percentage', 10, TRUE);
+
+INSERT INTO coupons (code, description, type, value, purchases_required) VALUES
+('FIDELIDADE30', '30% de desconto a cada 5 pedidos', 'percentage', 30, 5),
+('BROTOGRATIS', 'Pizza Broto grátis a cada 10 pedidos', 'free_item', 0.00, 10);
