@@ -45,12 +45,12 @@
 .profile-subpage-content input:focus,
 .profile-subpage-content select:focus {
     outline: none;
-    border-color: #e44d26;
+    border-color: #dc3545;
     box-shadow: 0 0 0 3px rgba(228, 77, 38, 0.2);
 }
 
 .profile-subpage-content .submit-button {
-    background-color: #e44d26;
+    background-color: #dc3545;
     color: white;
     padding: 10px 20px;
     border: none;
@@ -63,7 +63,7 @@
 }
 
 .profile-subpage-content .submit-button:hover {
-    background-color: #c0392b;
+    background-color: #c82333;
 }
 
 .profile-subpage-content .message-info {
@@ -145,11 +145,102 @@
     background-color: #c82333;
 }
 
+.loyalty-intro-message {
+    font-size: 1.1em;
+    text-align: center;
+    margin-bottom: 30px;
+    color: #444;
+}
+.loyalty-intro-message strong {
+    color: #e44d26;
+    font-size: 1.2em;
+}
+
+.loyalty-progress-summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+    padding: 15px;
+    border: 1px solid #f0f0f0;
+    border-radius: 10px;
+    background-color: #fcfcfc;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.progress-block {
+    background-color: #fff;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.progress-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.progress-block h4 {
+    font-size: 1.3em;
+    color: #e44d26;
+    margin: 0;
+    text-align: left;
+}
+
+.status {
+    font-size: 0.9em;
+    font-weight: bold;
+    padding: 5px 10px;
+    border-radius: 5px;
+    white-space: nowrap;
+}
+
+.status.available {
+    background-color: #d4edda;
+    color: #28a745;
+}
+
+.status.pending {
+    background-color: #ffe0b2;
+    color: #fb8c00;
+}
+
+.progress-bar-container {
+    width: 100%;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+    margin-bottom: 10px;
+}
+
+.progress-bar {
+    height: 100%;
+    background-color: #28a745;
+    border-radius: 10px;
+    transition: width 0.5s ease-in-out;
+}
+
+.progress-text {
+    font-size: 0.95em;
+    color: #555;
+    margin-top: 5px;
+    min-height: 2em;
+}
+
 .loyalty-programs h4 {
     font-size: 1.4em;
     color: #444;
     margin-top: 30px;
     margin-bottom: 20px;
+    text-align: center;
 }
 
 .coupons-list {
@@ -170,6 +261,12 @@
     transition: transform 0.2s ease;
 }
 
+.coupon-card.available-coupon-card { 
+    border: 2px solid #28a745;
+    background-color: #e6ffe6; 
+}
+
+
 .coupon-card:hover:not(.redeemed) {
     transform: translateY(-3px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
@@ -185,12 +282,13 @@
 .coupon-details {
     flex-grow: 1;
     text-align: left;
+    margin-bottom: 15px;
 }
 
 .coupon-value {
     font-size: 1.8em;
     font-weight: bold;
-    color: #e44d26;
+    color: #dc3545;
     display: block;
     margin-bottom: 5px;
 }

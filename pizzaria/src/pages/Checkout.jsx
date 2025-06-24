@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../context/CartContextDefinition';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import './Checkout.css';
@@ -29,6 +29,7 @@ function Checkout() {
   const [cupomCode, setCupomCode] = useState('');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [cupomMessage, setCupomMessage] = useState('');
+  const [cupomMessageType, setCupomMessageType] = useState('');
   const [appliedCupomCode, setAppliedCupomCode] = useState(null);
 
   const [notes, setNotes] = useState('');
@@ -111,11 +112,13 @@ function Checkout() {
 
   const handleApplyCupom = async () => {
     setCupomMessage('');
+    setCupomMessageType('');
     setDiscountAmount(0);
     setAppliedCupomCode(null);
 
     if (!cupomCode) {
         setCupomMessage('Digite um código de cupom.');
+        setCupomMessageType('error');
         return;
     }
     if (!user || !token) {
@@ -154,11 +157,13 @@ function Checkout() {
 
         setDiscountAmount(data.discountAmount);
         setCupomMessage(data.message);
+        setCupomMessageType('success');
         setAppliedCupomCode(cupomCode.toUpperCase());
     } catch (err) {
         console.error('Erro ao aplicar cupom:', err);
         setDiscountAmount(0);
         setCupomMessage(err.message || 'Erro ao aplicar cupom. Tente novamente.');
+        setCupomMessageType('error');
     }
   };
 
@@ -171,8 +176,92 @@ function Checkout() {
     setNewCardForm(prev => ({ ...prev, [name]: value })); 
   };
 
-  const handleAddNewAddress = async () => { /* ... */ };
-  const handleAddNewCard = async () => { /* ... */ };
+const handleAddNewAddress = async () => {
+    if (!newAddressForm.nickname || !newAddressForm.street || !newAddressForm.number || !newAddressForm.neighborhood || !newAddressForm.city || !newAddressForm.state || !newAddressForm.zip_code) {
+        setError('Por favor, preencha todos os campos do novo endereço antes de salvar.');
+        return;
+    }
+
+    if (!user || !token) {
+        setError("Usuário não logado ou token ausente. Por favor, faça login.");
+        return;
+    }
+
+    setLoading(true);
+    setError(null);
+    
+    try {
+        const response = await fetch('http://localhost:5000/api/addresses', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ ...newAddressForm, user_id: user.id })
+        });
+        const data = await response.json();
+
+        if (!response.ok) { 
+            throw new Error(data.message || 'Erro ao adicionar endereço.');
+        }
+
+        setAddresses(prev => [...prev, { ...newAddressForm, user_id: user.id, id: data.id }]); 
+        setSelectedAddressId(data.id);
+        setIsAddingNewAddress(false);
+        setNewAddressForm({ nickname: '', street: '', number: '', complement: '', neighborhood: '', city: '', state: '', zip_code: '' });
+        setError(null);
+        alert('Novo endereço salvo com sucesso!');
+    } catch (err) {
+        console.error("Erro ao adicionar novo endereço no checkout:", err);
+        setError(err.message || 'Erro ao adicionar novo endereço. Verifique sua conexão ou tente novamente.');
+    } finally {
+        setLoading(false);
+    }
+  };
+
+  const handleAddNewCard = async () => {
+    if (!newCardForm.last_four_digits || !newCardForm.brand || !newCardForm.cardholder_name) {
+        setError('Por favor, preencha todos os campos obrigatórios do novo cartão antes de salvar.');
+        return;
+    }
+
+    if (!user || !token) {
+        setError("Usuário não logado ou token ausente. Por favor, faça login.");
+        return;
+    }
+    
+    setLoading(true);
+    setError(null);
+    
+    const simulatedGatewayToken = `token_${Math.random().toString(36).substring(2, 15)}`;
+    
+    try {
+        const response = await fetch('http://localhost:5000/api/cards', {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json', 
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ ...newCardForm, user_id: user.id, gateway_token: simulatedGatewayToken })
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.message || 'Erro ao adicionar cartão.');
+        }
+
+        setCards(prev => [...prev, { ...newCardForm, user_id: user.id, id: data.id }]);
+        setSelectedCardId(data.id); 
+        setNewCardForm({ nickname: '', last_four_digits: '', brand: '', cardholder_name: '', gateway_token: '' });
+        setError(null); 
+        alert('Novo cartão salvo com sucesso!');
+    } catch (err) {
+        console.error("Erro ao adicionar novo cartão no checkout:", err);
+        setError(err.message || 'Erro ao adicionar novo cartão. Verifique sua conexão ou tente novamente.');
+    } finally {
+        setLoading(false);
+    }
+  };
 
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
@@ -180,18 +269,57 @@ function Checkout() {
     setError(null);
     setSuccess(false);
 
-    if (cartItems.length === 0) { setError('Seu carrinho está vazio. Adicione itens antes de finalizar.'); setLoading(false); return; }
-    if (!user) { setError('Você precisa estar logado para finalizar um pedido.'); setLoading(false); navigate('/login'); return; }
-    if (addresses.length === 0 && !isAddingNewAddress) { setError('Você não tem endereços cadastrados. Por favor, adicione um.'); setLoading(false); return; }
-    if (isAddingNewAddress) { setError('Por favor, salve o novo endereço clicando no botão "Salvar Novo Endereço" antes de confirmar o pedido.'); setLoading(false); return; }
-    if (!isAddingNewAddress && !selectedAddressId) { setError('Por favor, selecione um endereço para a entrega.'); setLoading(false); return; }
-    if (!paymentMethod) { setError('Por favor, selecione um método de pagamento.'); setLoading(false); return; }
+    if (cartItems.length === 0) {
+      setError('Seu carrinho está vazio. Adicione itens antes de finalizar.');
+      setLoading(false);
+      return;
+    }
+    if (!user) {
+      setError('Você precisa estar logado para finalizar um pedido.');
+      setLoading(false);
+      navigate('/login');
+      return;
+    }
+
+    let finalAddressId = selectedAddressId;
+
+    if (isAddingNewAddress) {
+        if (!selectedAddressId || !addresses.some(addr => addr.id === selectedAddressId)) {
+            setError('Por favor, preencha todos os campos do novo endereço e clique em "Salvar Novo Endereço" antes de confirmar o pedido.');
+            setLoading(false);
+            return;
+        }
+    } else { 
+        if (!selectedAddressId) {
+            setError('Por favor, selecione um endereço para a entrega.');
+            setLoading(false);
+            return;
+        }
+    }
+    if (!paymentMethod) {
+        setError('Por favor, selecione um método de pagamento.');
+        setLoading(false);
+        return;
+    }
 
     if (paymentMethod === 'app_payment') {
-        if (!selectedAppPaymentOption) { setError('Por favor, escolha uma opção de pagamento no aplicativo (cartão salvo, novo cartão ou Pix).'); setLoading(false); return; }
-        if (selectedAppPaymentOption === 'saved_card' && !selectedCardId) { setError('Por favor, selecione um cartão salvo.'); setLoading(false); return; }
-        if (selectedAppPaymentOption === 'new_card' && (!newCardForm.last_four_digits || !newCardForm.brand || !newCardForm.cardholder_name)) {
-             setError('Por favor, salve o novo cartão clicando em "Salvar Novo Cartão" antes de confirmar o pedido.'); setLoading(false); return;
+        if (!selectedAppPaymentOption) {
+            setError('Por favor, escolha uma opção de pagamento no aplicativo (cartão salvo, novo cartão ou Pix).');
+            setLoading(false);
+            return;
+        }
+        if (selectedAppPaymentOption === 'saved_card') {
+            if (!selectedCardId) {
+                setError('Por favor, selecione um cartão salvo para o pagamento.');
+                setLoading(false);
+                return;
+            }
+        } else if (selectedAppPaymentOption === 'new_card') {
+            if (!selectedCardId || !cards.some(card => card.id === selectedCardId)) { 
+                setError('Por favor, preencha e salve o novo cartão clicando em "Salvar Novo Cartão" antes de confirmar o pedido.');
+                setLoading(false);
+                return;
+            }
         }
     }
 
@@ -211,7 +339,7 @@ function Checkout() {
     });
 
     const orderData = {
-      addressId: selectedAddressId,
+      addressId: finalAddressId,
       totalPrice: finalPrice,
       paymentMethod: paymentMethod,
       notes: notes,
@@ -219,6 +347,8 @@ function Checkout() {
       cupomApplied: appliedCupomCode,
       discountAmount: discountAmount,
     };
+
+    console.log('Order data to send:', orderData);
 
     try {
       const response = await fetch('http://localhost:5000/api/orders', {
@@ -233,6 +363,7 @@ function Checkout() {
       const data = await response.json();
 
       if (!response.ok) {
+        console.error('Order submission failed response:', data);
         throw new Error(data.message || 'Erro ao finalizar o pedido.');
       }
 
@@ -350,7 +481,7 @@ function Checkout() {
                     placeholder="Digite seu cupom"
                 />
                 <button type="button" onClick={handleApplyCupom} className="apply-cupom-button">Aplicar</button>
-                {cupomMessage && <p className="cupom-message">{cupomMessage}</p>}
+                {cupomMessage && <p className={`cupom-message ${cupomMessageType}`}>{cupomMessage}</p>} 
             </div>
             <div className="order-total-summary">
               <strong>Total do Pedido:</strong>
@@ -428,7 +559,6 @@ function Checkout() {
                 {selectedAppPaymentOption === 'pix' && (
                   <div className="pix-info">
                     <p>Você será direcionado para a tela de pagamento Pix após a confirmação do pedido.</p>
-                    <p>Chave Pix: <strong>11999999999</strong> (Celular)</p>
                   </div>
                 )}
               </div>

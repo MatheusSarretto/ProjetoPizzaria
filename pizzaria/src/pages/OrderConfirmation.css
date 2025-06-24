@@ -48,12 +48,12 @@
 }
 
 .home-button {
-  background-color: #e44d26;
+  background-color: #dc3545;
   color: white;
 }
 
 .home-button:hover {
-  background-color: #c0392b;
+  background-color: #c82333;
   transform: translateY(-2px);
 }
 

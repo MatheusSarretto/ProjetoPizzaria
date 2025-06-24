@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../context/CartContextDefinition';
 import './ConfirmAddToCartModal.css';
 
 function ConfirmAddToCartModal({ isOpen, onClose, product }) {
@@ -23,8 +23,8 @@ function ConfirmAddToCartModal({ isOpen, onClose, product }) {
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="confirm-add-to-cart-modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close-button" onClick={onClose}>&times;</button>
-        <h2>Adicionar ao Carrinho: {product.name}</h2>
+        <button className="modal-close-button" onClick={onClose}>🗙</button>
+        <h2>Adicionar ao Carrinho:</h2>
 
         <div className="product-details-summary">
           <img

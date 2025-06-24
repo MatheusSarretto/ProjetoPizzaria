@@ -41,7 +41,7 @@
   line-height: 1;
 }
 .modal-close-button:hover {
-  color: #e44d26;
+  color: #dc3545;
 }
 
 .confirm-add-to-cart-modal-content h2 {
@@ -89,7 +89,7 @@
 .product-price-small {
   font-size: 1.1em;
   font-weight: bold;
-  color: #e44d26;
+  color: #dc3545;
 }
 
 .quantity-selector {
@@ -109,7 +109,7 @@
 }
 
 .quantity-controls button {
-  background-color: #e44d26;
+  background-color: #dc3545;
   color: white;
   border: none;
   padding: 8px 15px;
@@ -156,7 +156,7 @@
 }
 
 .confirm-button {
-  background-color: #28a745;
+  background-color: #dc3545;
   color: white;
   padding: 12px 25px;
   border: none;
@@ -167,13 +167,13 @@
   transition: background-color 0.3s ease;
 }
 .confirm-button:hover {
-  background-color: #218838;
+  background-color: #ffc107;
 }
 
 .subtotal {
   font-size: 1.5em;
   font-weight: bold;
-  color: #e44d26;
+  color: #dc3545;
   margin: 0;
 }
 

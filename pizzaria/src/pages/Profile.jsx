@@ -26,11 +26,19 @@ function Profile() {
   return (
     <div className="profile-dashboard-container">
       <div className="profile-header-info">
-        <h2>Olá, {user.name}!</h2>
-        <p>Email: {user.email}</p>
-        <p>CPF: {user.cpf}</p>
-        <p>Celular: {user.cellphone}</p>
-        <p>Seu perfil é: <strong>{user.role}</strong></p>
+        <div className="profile-avatar-section">
+          <img 
+            src="/profile-mascot.png"
+            alt="Mascote da Pizzaria" 
+            className="profile-mascot-avatar" 
+          />
+          <div className="profile-personal-info">
+            <h2>Olá, {user.name}!</h2>
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>CPF:</strong> {user.cpf}</p>
+            <p><strong>Celular:</strong> {user.cellphone}</p>
+          </div>
+        </div>
         <button onClick={logout} className="logout-button">Sair</button>
       </div>
 

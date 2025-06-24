@@ -54,7 +54,7 @@ CREATE TABLE orders (
     address_id INT NOT NULL,
     total_price DECIMAL(10, 2) NOT NULL,
     payment_method VARCHAR(50) NOT NULL,
-    status VARCHAR(50) NOT NULL DEFAULT 'pending',
+    status ENUM('pending', 'confirmed', 'preparing', 'on_the_way', 'delivered', 'cancelled', 'refunded') NOT NULL DEFAULT 'pending';
     notes TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id),
@@ -153,8 +153,10 @@ INSERT INTO products (name, description, price, category) VALUES
 
 
 INSERT INTO coupons (code, description, type, value, is_active) VALUES
-('BOMNOITE10', '10% de desconto para seu primeiro pedido no site!', 'percentage', 10, TRUE);
+('BOMNOITE10', '10% de desconto em todo pedido', 'percentage', 10, TRUE);
 
 INSERT INTO coupons (code, description, type, value, purchases_required) VALUES
-('FIDELIDADE30', '30% de desconto a cada 5 pedidos', 'percentage', 30, 5),
-('BROTOGRATIS', 'Pizza Broto grátis a cada 10 pedidos', 'free_item', 0.00, 10);
+('FIDELIDADE30', '30% de desconto a cada 5 pedidos', 'percentage', 30, 5);
+
+INSERT INTO coupons (code, description, type, value, target_item_category, purchases_required) VALUES
+('BROTOGRATIS', 'Pizza Broto grátis a cada 10 pedidos', 'free_item', 0, 'broto', 10);

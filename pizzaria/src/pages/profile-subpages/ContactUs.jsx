@@ -9,7 +9,7 @@ function ContactUs() {
       <p>Entre em contato conosco para dúvidas, sugestões ou suporte.</p>
       <ul>
         <li>Telefone: (11) 1234-5678</li>
-        <li>Email: contato@pizzariaboanoite.com.br</li>
+        <li>Email: bomnoitepizzaria@gmail.com</li>
       </ul>
     </div>
   );

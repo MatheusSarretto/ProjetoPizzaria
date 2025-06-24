@@ -8,7 +8,7 @@ function LoyaltyPrograms() {
   const { user, token } = useAuth();
 
   const [loyaltyData, setLoyaltyData] = useState(null);
-  const [generalCoupons, setGeneralCoupons] = useState([]);
+  const [availableCoupons, setAvailableCoupons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -24,8 +24,8 @@ function LoyaltyPrograms() {
         const errorData = await loyaltyResponse.json();
         throw new Error(errorData.message || 'Falha ao buscar progresso de fidelidade.');
       }
-      const loyaltyData = await loyaltyResponse.json();
-      setLoyaltyData(loyaltyData);
+      const fetchedLoyaltyData = await loyaltyResponse.json();
+      setLoyaltyData(fetchedLoyaltyData);
 
       const couponsResponse = await fetch('http://localhost:5000/api/coupons', {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -34,8 +34,8 @@ function LoyaltyPrograms() {
         const errorData = await couponsResponse.json();
         throw new Error(errorData.message || 'Falha ao buscar cupons.');
       }
-      const couponsData = await couponsResponse.json();
-      setGeneralCoupons(couponsData.filter(c => !c.purchases_required));
+      const fetchedCouponsData = await couponsResponse.json();
+      setAvailableCoupons(fetchedCouponsData);
       
     } catch (err) {
       console.error("Erro ao buscar dados de fidelidade:", err);
@@ -49,6 +49,13 @@ function LoyaltyPrograms() {
     fetchData();
   }, [fetchData]);
 
+  const progress30 = loyaltyData 
+    ? (loyaltyData.fidelidade30_available ? 100 : Math.min(100, (loyaltyData.purchases_count / 5) * 100))
+    : 0;
+  const progressBroto = loyaltyData 
+    ? (loyaltyData.brotogratis_available ? 100 : Math.min(100, (loyaltyData.purchases_count / 10) * 100))
+    : 0;
+
   return (
     <div className="profile-subpage-content loyalty-programs">
       <h3>Programas de Fidelidade</h3>
@@ -57,61 +64,69 @@ function LoyaltyPrograms() {
       
       {!loading && !error && loyaltyData && (
         <>
-          <h4>Seu Progresso de Compras:</h4>
-          <div className="loyalty-progress-cards">
-            <div className="progress-card">
-              <p>Pedidos Completados: <strong>{loyaltyData.purchases_count}</strong></p>
-              <p>Próximo Cupom (30%): <strong>{loyaltyData.purchases_count} de 5 compras</strong></p>
-              {loyaltyData.fidelidade30_available ? (
-                <span className="status available">FIDELIDADE30 DISPONÍVEL!</span>
-              ) : (
-                <span className="status pending">Faltam {5 - loyaltyData.purchases_count} pedidos para 30%</span>
-              )}
+          <h4>Seu Progresso de Fidelidade:</h4>
+          
+          <div className="loyalty-progress-summary">
+            <div className="progress-block">
+              <div className="progress-header">
+                <h4>FIDELIDADE30<br />(30% de Desconto)</h4>
+                {loyaltyData.fidelidade30_available ? (
+                  <span className="status available">DISPONÍVEL!</span>
+                ) : (
+                  <span className="status pending">Em Progresso</span>
+                )}
+              </div>
+              <div className="progress-bar-container">
+                <div className="progress-bar" style={{ width: `${progress30}%` }}></div>
+              </div>
+              <p className="progress-text">
+                {loyaltyData.fidelidade30_available ? (
+                    'Cupom pronto para uso no checkout!'
+                ) : (
+                    `Faltam ${5 - loyaltyData.purchases_count > 0 ? 5 - loyaltyData.purchases_count : 0} pedidos para ganhar.`
+                )}
+              </p>
             </div>
-            <div className="progress-card">
-              <p>Pedidos Completados: <strong>{loyaltyData.purchases_count}</strong></p>
-              <p>Próximo Cupom (Broto Grátis): <strong>{loyaltyData.purchases_count} de 10 compras</strong></p>
-              {loyaltyData.brotogratis_available ? (
-                <span className="status available">BROTOGRATIS DISPONÍVEL!</span>
-              ) : (
-                <span className="status pending">Faltam {10 - loyaltyData.purchases_count} pedidos para Broto Grátis</span>
-              )}
+
+            <div className="progress-block">
+              <div className="progress-header">
+                <h4>BROTOGRATIS<br />(Broto Grátis)</h4>
+                {loyaltyData.brotogratis_available ? (
+                  <span className="status available">Disponível!</span>
+                ) : (
+                  <span className="status pending">Em Progresso</span>
+                )}
+              </div>
+              <div className="progress-bar-container">
+                <div className="progress-bar" style={{ width: `${progressBroto}%` }}></div>
+              </div>
+              <p className="progress-text">
+                {loyaltyData.brotogratis_available ? (
+                    'Cupom pronto para uso no checkout!'
+                ) : (
+                    `Faltam ${10 - loyaltyData.purchases_count > 0 ? 10 - loyaltyData.purchases_count : 0} pedidos para Broto Grátis.`
+                )}
+              </p>
             </div>
           </div>
 
-          <h4>Seus Cupons:</h4>
-          <div className="coupons-list">
-            {generalCoupons.map(coupon => (
-                <div key={coupon.id} className="coupon-card">
-                    <div className="coupon-details">
-                        <span className="coupon-value">{coupon.value}{coupon.type === 'percentage' ? '%' : ''}</span>
-                        <p className="coupon-description">{coupon.description}</p>
-                    </div>
-                    <span className="redeem-status">Disponível</span>
-                </div>
-            ))}
-            {loyaltyData.fidelidade30_available && (
-              <div className="coupon-card">
-                <div className="coupon-details">
-                  <span className="coupon-value">30%</span>
-                  <p className="coupon-description">Cupom FIDELIDADE30: 30% de desconto!</p>
-                </div>
-                <span className="redeem-status">Disponível</span>
-              </div>
-            )}
-            {loyaltyData.brotogratis_available && (
-              <div className="coupon-card">
-                <div className="coupon-details">
-                  <span className="coupon-value">Broto Grátis</span>
-                  <p className="coupon-description">Cupom BROTOGRATIS: Pizza Broto Grátis!</p>
-                </div>
-                <span className="redeem-status">Disponível</span>
-              </div>
-            )}
-            {(!generalCoupons.length && !loyaltyData.fidelidade30_available && !loyaltyData.brotogratis_available) && (
-                <p>Nenhum cupom disponível no momento. Complete mais pedidos!</p>
-            )}
-          </div>
+          <h4>Cupons Ativos:</h4>
+          {availableCoupons.length === 0 ? (
+            <p>Nenhum cupom disponível no momento. Complete mais pedidos! <Link to="/">Peça agora</Link>.</p>
+          ) : (
+            <div className="coupons-list">
+              {availableCoupons.map(coupon => (
+                  <div key={coupon.id} className={`coupon-card available-coupon-card ${coupon.purchases_required ? 'loyalty-coupon-specific' : ''}`}>
+                      <div className="coupon-details">
+                          {coupon.type === 'free_item' ? (<span className="coupon-value">Broto Grátis</span>) : 
+                          (<span className="coupon-value">{coupon.value}{coupon.type === 'percentage' ? '%' : ''}</span>)}
+                          <p className="coupon-description">{coupon.description}</p>
+                      </div>
+                      <span className="redeem-status">Código: {coupon.code}</span>
+                  </div>
+              ))}
+            </div>
+          )}
         </>
       )}
     </div>

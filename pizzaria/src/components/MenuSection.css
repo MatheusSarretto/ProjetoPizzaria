@@ -38,7 +38,7 @@
 
 .menu-topic-item:hover,
 .menu-topic-item:focus {
-  background-color: #e44d26;
+  background-color: #dc3545;
   color: white;
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -69,7 +69,7 @@
   bottom: 0;
   width: 80px;
   height: 3px;
-  background-color: #e44d26;
+  background-color: #dc3545;
   border-radius: 5px;
 }
 

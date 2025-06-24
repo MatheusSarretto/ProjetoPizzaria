@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import './AuthForm.css';
 
 function Register() {
@@ -13,6 +13,8 @@ function Register() {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState(null);
 
+  const navigate = useNavigate(); 
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError(null);
@@ -45,6 +47,10 @@ function Register() {
       setConfirmPassword('');
       setCpf('');
       setCellphone('');
+
+      alert('Cadastro realizado com sucesso! Agora você pode fazer login.');
+      navigate('/login');
+
     } catch (err) {
       console.error('Erro no cadastro:', err);
       setError(err.message);

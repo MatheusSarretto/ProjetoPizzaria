@@ -11,6 +11,7 @@ function OrderConfirmation() {
       <p>Seu pedido foi recebido e está sendo preparado para a entrega.</p>
       <p>Você receberá atualizações sobre o status do seu pedido por e-mail.</p>
       <div className="order-confirmation-actions">
+        <Link to="/profile/orders" className="my-orders-button">Ver Meus Pedidos</Link>
         <Link to="/" className="home-button">Voltar à Página Inicial</Link>
       </div>
     </div>

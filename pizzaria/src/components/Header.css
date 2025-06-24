@@ -138,7 +138,7 @@
 
 .cart-item-count {
   font-weight: bold;
-  color: #e44d26;
+  color: #dc3545;
 }
 
 .cart-total-price {
@@ -161,7 +161,7 @@
 }
 
 .profile-info-link:hover .profile-text {
-  color: #e44d26;
+  color: #dc3545;
 }
 
 .compact-menu-nav {
@@ -184,7 +184,7 @@
 }
 
 .menu-toggle-button:hover {
-  border-color: #e44d26;
+  border-color: #dc3545;
   box-shadow: 0 0 0 2px rgba(228, 77, 38, 0.2);
 }
 
@@ -238,7 +238,8 @@
 }
 
 .expanded-menu-item:hover {
-  color: #e44d26;
+  color: #dc3545;
+  cursor: pointer;
 }
 
 .compact-search-bar {

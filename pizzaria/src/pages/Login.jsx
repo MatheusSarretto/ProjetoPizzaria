@@ -29,7 +29,7 @@ function Login() {
         {error && <p className="error-message">{error}</p>}
 
         <div className="form-group">
-          <label htmlFor="username">Nome de Usuário:</label>
+          <label htmlFor="username">E-mail:</label>
           <input
             type="text"
             id="username"

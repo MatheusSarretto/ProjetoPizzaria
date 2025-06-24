@@ -2,17 +2,17 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import './Admin.css'; 
+import './Admin.css';
 
-function Admin() {
+function ProductAdmin() {
   const { user, token } = useAuth();
   const navigate = useNavigate();
 
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [editingProduct, setEditingProduct] = useState(null); 
-  const [formProduct, setFormProduct] = useState({ 
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [formProduct, setFormProduct] = useState({
     name: '',
     description: '',
     price: '',
@@ -21,7 +21,7 @@ function Admin() {
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
-      navigate('/login'); 
+      navigate('/login');
     }
   }, [user, navigate]);
 
@@ -31,7 +31,7 @@ function Admin() {
     try {
       const response = await fetch('http://localhost:5000/api/products', {
         headers: {
-          'Authorization': `Bearer ${token}` 
+          'Authorization': `Bearer ${token}`
         }
       });
       if (!response.ok) {
@@ -74,8 +74,8 @@ function Admin() {
         const errorData = await response.json();
         throw new Error(errorData.message || 'Erro ao criar produto.');
       }
-      setFormProduct({ name: '', description: '', price: '', category: '' }); 
-      fetchProducts(); 
+      setFormProduct({ name: '', description: '', price: '', category: '' });
+      fetchProducts();
     } catch (err) {
       console.error("Erro ao criar produto:", err);
       setError(err.message);
@@ -110,7 +110,7 @@ function Admin() {
       }
       setEditingProduct(null);
       setFormProduct({ name: '', description: '', price: '', category: '' });
-      fetchProducts(); 
+      fetchProducts();
     } catch (err) {
       console.error("Erro ao atualizar produto:", err);
       setError(err.message);
@@ -258,4 +258,4 @@ function Admin() {
   );
 }
 
-export default Admin;
+export default ProductAdmin;

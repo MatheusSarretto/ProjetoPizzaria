@@ -14,11 +14,12 @@ const PAYMENT_METHOD_MAP = {
 
 const ORDER_STATUS_MAP = {
   'pending': 'Pendente',
-  'processing': 'Em Preparação',
+  'confirmed': 'Confirmado',
+  'preparing': 'Em Preparação',
   'on_the_way': 'A Caminho',
   'delivered': 'Entregue',
   'cancelled': 'Cancelado',
-  'completed': 'Concluído',
+  'refunded': 'Reembolsado',
 };
 
 function MyOrders() {

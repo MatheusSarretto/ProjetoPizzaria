@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { useCart } from '../context/CartContext';
+import { useCart } from '../context/CartContextDefinition';
 import './PizzaConfigModal.css';
 
 const BORDER_FLAVORS = [
@@ -24,28 +24,28 @@ const MIX_COMPATIBILITY = {
   'doces': ['doces'],
 };
 
-function PizzaConfigModal({ isOpen, onClose, pizza, allPizzas, onUpdateCartItem }) { 
+function PizzaConfigModal({ isOpen, onClose, pizza, allPizzas, itemToEdit, onUpdateCartItem }) { 
   const { addToCart } = useCart();
 
   const [currentStep, setCurrentStep] = useState(1);
   const [selectedSize, setSelectedSize] = useState('grande');
-  const [selectedFlavors, setSelectedFlavors] = useState([]);
+  const [selectedFlavors, setSelectedFlavors] = useState([]); 
   const [selectedBorderFlavor, setSelectedBorderFlavor] = useState(BORDER_FLAVORS[BORDER_FLAVORS.length - 1].id);
   const [observations, setObservations] = useState('');
   const [currentPrice, setCurrentPrice] = useState(0);
 
-  const isEditing = !!onUpdateCartItem;
+  const isEditing = !!itemToEdit;
 
   useEffect(() => {
-    if (isOpen && pizza) {
-      setCurrentStep(1);
+    if (isOpen && (pizza || itemToEdit)) {
+      setCurrentStep(1); 
 
       if (isEditing) {
-        setSelectedSize(pizza.size || 'grande');
-        setSelectedFlavors(pizza.flavors || []); 
-        setSelectedBorderFlavor(BORDER_FLAVORS.find(b => b.name === pizza.borderFlavor)?.id || BORDER_FLAVORS[BORDER_FLAVORS.length - 1].id);
-        setObservations(pizza.observations || '');
-        setCurrentPrice(pizza.price);
+        setSelectedSize(itemToEdit.size || 'grande');
+        setSelectedFlavors(itemToEdit.flavors || []); 
+        setSelectedBorderFlavor(BORDER_FLAVORS.find(b => b.name === itemToEdit.borderFlavor)?.id || BORDER_FLAVORS[BORDER_FLAVORS.length - 1].id);
+        setObservations(itemToEdit.observations || '');
+        setCurrentPrice(itemToEdit.price);
       } else {
         setSelectedSize('grande');
         setSelectedFlavors([pizza]);
@@ -54,16 +54,19 @@ function PizzaConfigModal({ isOpen, onClose, pizza, allPizzas, onUpdateCartItem 
         setCurrentPrice(pizza.price);
       }
     }
-  }, [isOpen, pizza, isEditing]);
+  }, [isOpen, pizza, isEditing, itemToEdit]);
 
   useEffect(() => {
-    if (!pizza) return;
+    if (!pizza && !itemToEdit) return;
+
+    const baseProduct = isEditing ? itemToEdit.flavors[0] : pizza;
+    if (!baseProduct) return;
 
     let basePrice = 0;
     if (selectedFlavors.length > 0) {
       basePrice = Math.max(...selectedFlavors.map(f => f.price));
     } else {
-      basePrice = pizza.price; 
+      basePrice = baseProduct.price; 
     }
 
     const sizeMultiplier = PIZZA_SIZES[selectedSize]?.multiplier || 1.0;
@@ -74,18 +77,23 @@ function PizzaConfigModal({ isOpen, onClose, pizza, allPizzas, onUpdateCartItem 
     }
 
     setCurrentPrice(basePrice);
-  }, [selectedSize, selectedFlavors, selectedBorderFlavor, pizza]);
+  }, [selectedSize, selectedFlavors, selectedBorderFlavor, pizza, isEditing, itemToEdit]);
 
-  if (!isOpen || !pizza) return null;
+
+  if (!isOpen || (!pizza && !itemToEdit)) return null;
+
+  const currentBasePizza = isEditing ? itemToEdit.flavors[0] : pizza; 
+  if (!currentBasePizza) return null;
 
   const currentMaxFlavors = PIZZA_SIZES[selectedSize]?.maxFlavors || 1;
 
-  const basePizzaCategory = pizza.category.toLowerCase();
+  const basePizzaCategory = currentBasePizza.category.toLowerCase();
   
   const compatibleCategories = MIX_COMPATIBILITY[basePizzaCategory] || [];
 
   const otherPizzaFlavors = allPizzas.filter(p => {
-    if (p.id === pizza.id) return false; 
+    const originalPizzaProductId = isEditing ? itemToEdit.originalPizzaId : pizza.id;
+    if (p.id === originalPizzaProductId) return false; 
     
     const isPizzaCategory = PIZZA_CATEGORIES_TYPES.includes(p.category.toLowerCase());
     if (!isPizzaCategory) return false;
@@ -94,22 +102,20 @@ function PizzaConfigModal({ isOpen, onClose, pizza, allPizzas, onUpdateCartItem 
     return isCompatible;
   });
 
-  console.log('Base Pizza Category:', basePizzaCategory);
-  console.log('Compatible Categories for mix:', compatibleCategories);
-  console.log('Other Pizza Flavors available for selection:', otherPizzaFlavors);
 
   const handleFlavorSelect = (flavor) => {
     setSelectedFlavors(prev => {
-      const isOriginalConfigPizza = flavor.id === pizza.id; 
-
+      const clickedIsBasePizza = (isEditing && flavor.id === itemToEdit.originalPizzaId) || (!isEditing && flavor.id === pizza.id);
+      
       const isAlreadySelected = prev.find(f => f.id === flavor.id);
 
-      if (isOriginalConfigPizza) { 
-          if (isAlreadySelected) {
-            return prev.length === 1 ? prev : prev.filter(f => f.id !== flavor.id);
-          } else {
-            return [...prev, flavor];
+      if (clickedIsBasePizza) {
+          if (isAlreadySelected && prev.length > 1) {
+            return prev.filter(f => f.id !== flavor.id);
+          } else if (!isAlreadySelected) {
+              return [...prev, flavor].sort((a,b) => a.id - b.id);
           }
+          return prev;
       }
 
       if (isAlreadySelected) {
@@ -121,28 +127,36 @@ function PizzaConfigModal({ isOpen, onClose, pizza, allPizzas, onUpdateCartItem 
           return prev;
         }
       }
-    });
+    }).sort((a,b) => a.id - b.id);
   };
 
+
   const handleFinalizeAction = () => {
+    const newUniqueCartItemId = `${currentBasePizza.id}-${selectedSize}-${selectedFlavors.map(f => f.id).sort().join('-')}-${selectedBorderFlavor}`;
+    
     const formattedFlavors = selectedFlavors.map(f => f.name).join(', ');
 
     const itemData = {
-      id: isEditing ? pizza.id : `${pizza.id}-${selectedSize}-${selectedFlavors.map(f => f.id).sort().join('-')}-${selectedBorderFlavor}`,
-      productId: isEditing ? pizza.originalPizzaId : pizza.id, 
+      id: newUniqueCartItemId, 
+      
+      productId: currentBasePizza.id, 
+      
       name: `${PIZZA_SIZES[selectedSize].name} - ${formattedFlavors}`, 
-      originalPizzaId: pizza.id,
+      
+      originalPizzaId: currentBasePizza.id,
+      
       flavors: selectedFlavors,
       formattedFlavors: formattedFlavors,
+      
       size: selectedSize,
       borderFlavor: BORDER_FLAVORS.find(b => b.id === selectedBorderFlavor)?.name,
       observations: observations,
       price: currentPrice,
-      quantity: pizza.quantity || 1,
+      quantity: isEditing ? itemToEdit.quantity : 1,
     };
 
     if (isEditing) {
-        onUpdateCartItem(pizza.id, itemData); 
+        onUpdateCartItem(itemToEdit.id, itemData); 
     } else {
         addToCart(itemData);
     }
@@ -150,17 +164,31 @@ function PizzaConfigModal({ isOpen, onClose, pizza, allPizzas, onUpdateCartItem 
   };
 
   const handleNextStep = () => {
-    setCurrentStep(prev => prev + 1);
+    if (currentStep === 1 && selectedSize === 'broto') {
+      setCurrentStep(3);
+    } else {
+      setCurrentStep(prev => prev + 1);
+    }
   };
 
   const handlePreviousStep = () => {
-    setCurrentStep(prev => prev - 1);
+    if (currentStep === 3 && selectedSize === 'broto') {
+      setCurrentStep(1);
+    } else {
+      setCurrentStep(prev => prev - 1);
+    }
+  };
+
+    const calculatePriceForSize = (sizeKey) => {
+    const baseFlavorPrice = pizza.price;
+    const sizeMultiplier = PIZZA_SIZES[sizeKey]?.multiplier || 1.0;
+    return (baseFlavorPrice * sizeMultiplier).toFixed(2);
   };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="pizza-config-modal-content" onClick={(e) => e.stopPropagation()}>
-        <button className="modal-close-button" onClick={onClose}>&times;</button>
+        <button className="modal-close-button" onClick={onClose}>🗙</button>
         <h2>{isEditing ? 'Editar Pizza' : 'Configurar sua Pizza'}: {pizza.name}</h2>
 
         {currentStep === 1 && (
@@ -175,14 +203,12 @@ function PizzaConfigModal({ isOpen, onClose, pizza, allPizzas, onUpdateCartItem 
                     checked={selectedSize === sizeKey}
                     onChange={(e) => {
                       setSelectedSize(e.target.value);
-                      if (e.target.value === 'broto') {
-                          setSelectedFlavors([pizza]);
-                      } else {
-                          setSelectedFlavors([pizza]); 
-                      }
+                      const newBaseFlavor = isEditing ? itemToEdit.flavors[0] : pizza;
+                      setSelectedFlavors([newBaseFlavor]); 
                     }}
                   />
                   <span>{PIZZA_SIZES[sizeKey].name}</span>
+                  <span className="size-price">R$ {calculatePriceForSize(sizeKey)}</span>
                 </label>
               ))}
             </div>
@@ -203,10 +229,10 @@ function PizzaConfigModal({ isOpen, onClose, pizza, allPizzas, onUpdateCartItem 
                     <label className="selected original-flavor">
                       <input type="checkbox" checked={true} disabled />
                       <div className="flavor-card-content">
-                        <img src={`/products/${pizza.id}.jpg`} alt={pizza.name} className="flavor-image" onError={(e) => { e.target.onerror = null; e.target.src = '/products/default.jpg'; }} />
-                        <span className="flavor-name">{pizza.name}</span>
-                        <span className="flavor-price">R$ {pizza.price.toFixed(2)}</span>
-                        <span className="flavor-description">{pizza.description}</span>
+                        <img src={`/products/${currentBasePizza.id}.jpg`} alt={currentBasePizza.name} className="flavor-image" onError={(e) => { e.target.onerror = null; e.target.src = '/products/default.jpg'; }} />
+                        <span className="flavor-name">{currentBasePizza.name}</span>
+                        <span className="flavor-price">R$ {currentBasePizza.price.toFixed(2)}</span>
+                        <span className="flavor-description">{currentBasePizza.description}</span>
                       </div>
                     </label>
 
@@ -230,7 +256,7 @@ function PizzaConfigModal({ isOpen, onClose, pizza, allPizzas, onUpdateCartItem 
                 </div>
               </>
             ) : (
-              <p>Você selecionou uma pizza de {selectedSize} sabor único: {pizza.name}.</p>
+              <p>Você selecionou uma pizza de {selectedSize} sabor único: {currentBasePizza?.name}.</p>
             )}
             <div className="step-navigation">
               <button className="back-button" onClick={handlePreviousStep}>Voltar</button>
@@ -260,13 +286,21 @@ function PizzaConfigModal({ isOpen, onClose, pizza, allPizzas, onUpdateCartItem 
                 </div>
             </div>
 
-            <h3 className="observations-title">4. Observações do Pedido:</h3>
-            <textarea
-              placeholder="Ex: Sem cebola, com pimenta, troco para..."
-              value={observations}
-              onChange={(e) => setObservations(e.target.value)}
-              rows="3"
-            ></textarea>
+            <div className="observations-and-price-container">
+                <div className="observations-group">
+                    <h3 className="observations-title">4. Observações do Pedido:</h3>
+                    <textarea
+                        placeholder="Ex: Sem cebola, com pimenta, troco para..."
+                        value={observations}
+                        onChange={(e) => setObservations(e.target.value)}
+                        rows="3"
+                    ></textarea>
+                </div>
+                <div className="total-price-display">
+                    <p className="total-label">Total do Pedido:</p>
+                    <p className="total-price">R$ {currentPrice.toFixed(2)}</p>
+                </div>
+            </div>
 
             <div className="step-navigation">
               <button className="back-button" onClick={handlePreviousStep}>Voltar</button>
@@ -276,10 +310,6 @@ function PizzaConfigModal({ isOpen, onClose, pizza, allPizzas, onUpdateCartItem 
             </div>
           </div>
         )}
-
-        <div className="modal-footer-price">
-          <p className="total-price">Total: R$ {currentPrice.toFixed(2)}</p>
-        </div>
       </div>
     </div>
   );

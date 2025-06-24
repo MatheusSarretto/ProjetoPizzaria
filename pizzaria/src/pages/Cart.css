@@ -16,7 +16,7 @@
 }
 
 .cart-container.no-items .continue-shopping-button {
-  background-color: #e44d26;
+  background-color: #dc3545;
   color: white;
   padding: 12px 25px;
   border: none;
@@ -31,7 +31,7 @@
 }
 
 .cart-container.no-items .continue-shopping-button:hover {
-  background-color: #c0392b;
+  background-color: #c82333;
 }
 
 
@@ -102,7 +102,7 @@
   margin-bottom: 5px;
 }
 .cart-item-border span {
-  color: #e44d26;
+  color: #dc3545;
   font-weight: normal;
 }
 
@@ -116,7 +116,7 @@
 }
 
 .item-quantity-controls button {
-  background-color: #e44d26;
+  background-color: #dc3545;
   color: white;
   border: none;
   border-radius: 5px;
@@ -140,7 +140,7 @@
 }
 
 .item-quantity-controls button:hover {
-  background-color: #c0392b;
+  background-color: #c82333;
 }
 
 .item-quantity-controls span {
@@ -162,7 +162,7 @@
 .cart-item-total > span {
   font-size: 1.4em;
   font-weight: bold;
-  color: #e44d26;
+  color: #dc3545;
   margin-bottom: 0;
 }
 
@@ -319,7 +319,7 @@
     margin-bottom: 25px;
 }
 .cart-empty-message .continue-shopping-button {
-    background-color: #e44d26;
+    background-color: #dc3545;
     color: white;
     padding: 12px 25px;
     border: none;
@@ -331,7 +331,7 @@
     transition: background-color 0.3s ease;
 }
 .cart-empty-message .continue-shopping-button:hover {
-    background-color: #c0392b;
+    background-color: #c82333;
 }
 
 @media (max-width: 480px) {

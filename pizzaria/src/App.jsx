@@ -7,9 +7,10 @@ import Cart from './pages/Cart';
 import Profile from './pages/Profile'; 
 import Register from './pages/Register';
 import Login from './pages/Login';
-import Admin from './pages/Admin';
 import Checkout from './pages/Checkout';
 import OrderConfirmation from './pages/OrderConfirmation';
+import OrderAdmin from './pages/OrderAdmin';
+import ProductAdmin from './pages/ProductAdmin';
 
 import EditProfile from './pages/profile-subpages/EditProfile';
 import MyOrders from './pages/profile-subpages/MyOrders';
@@ -18,7 +19,7 @@ import MyCards from './pages/profile-subpages/MyCards';
 import LoyaltyPrograms from './pages/profile-subpages/LoyaltyPrograms';
 import ContactUs from './pages/profile-subpages/ContactUs';
 
-import { CartProvider } from './context/CartContext';
+import { CartProvider } from './context/CartProvider';
 import { AuthProvider } from './context/AuthContext';
 import { SearchProvider } from './context/SearchProvider';
 
@@ -59,7 +60,6 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/cart" element={<Cart />} />
-              <Route path="/admin" element={<Admin />} />
               <Route path="/checkout" element={<Checkout />} />
               <Route path="/order-confirmation" element={<OrderConfirmation />} />
 
@@ -75,6 +75,9 @@ function App() {
                 <Route path="loyalty" element={<LoyaltyPrograms />} />
                 <Route path="contact" element={<ContactUs />} />
               </Route>
+
+              <Route path="/admin" element={<OrderAdmin />} />
+              <Route path="/admin/products" element={<ProductAdmin />} />
             </Routes>
           </main>
         </SearchProvider>

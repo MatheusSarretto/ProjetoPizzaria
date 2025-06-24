@@ -393,37 +393,59 @@ app.delete('/api/cards/:id', authenticateToken, async (req, res) => {
 });
 
 app.get('/api/coupons', authenticateToken, async (req, res) => {
+    let connection;
     try {
-        const [generalCoupons] = await pool.query('SELECT id, code, description, type, value, target_item_category, max_uses, expires_at FROM coupons WHERE is_active = TRUE AND purchases_required IS NULL');
-        
-        let loyaltyProgress = null;
-        if (req.user && req.user.id) {
-            const [loyaltyRows] = await pool.query('SELECT * FROM customer_loyalty WHERE user_id = ?', [req.user.id]);
-            if (loyaltyRows.length > 0) {
-                loyaltyProgress = loyaltyRows[0];
-            }
-        }
+        connection = await pool.getConnection(); 
 
-        const availableCoupons = generalCoupons.map(coupon => ({
+        console.log('Backend: Fetching all active coupons from DB.');
+        const [allActiveCoupons] = await connection.query('SELECT id, code, description, type, value, target_item_category, purchases_required, is_active, expires_at, max_uses FROM coupons WHERE is_active = TRUE');
+        console.log('Backend: All active coupons fetched:', allActiveCoupons);
+        
+        let finalCouponsList = [];
+
+        const generalCoupons = allActiveCoupons.filter(coupon => coupon.purchases_required === null);
+        finalCouponsList.push(...generalCoupons.map(coupon => ({
             ...coupon,
             value: parseFloat(coupon.value),
-        }));
+            expires_at: coupon.expires_at ? new Date(coupon.expires_at).toISOString() : null,
+            max_uses: coupon.max_uses || null
+        })));
+        console.log('Backend: General coupons added:', generalCoupons);
+
+        let loyaltyProgress = null;
+        if (req.user && req.user.id) {
+            console.log(`Backend: Checking loyalty progress for user ${req.user.id}.`);
+            const [loyaltyRows] = await connection.query('SELECT * FROM customer_loyalty WHERE user_id = ?', [req.user.id]);
+            if (loyaltyRows.length > 0) {
+                loyaltyProgress = loyaltyRows[0];
+            } else {
+                console.log(`Backend: No loyalty entry found for user ${req.user.id}, creating one.`);
+                await connection.query('INSERT INTO customer_loyalty (user_id) VALUES (?)', [req.user.id]);
+                loyaltyProgress = { user_id: req.user.id, purchases_count: 0, fidelidade30_available: false, brotogratis_available: false };
+            }
+        }
+        console.log('Backend: Loyalty progress:', loyaltyProgress);
 
         if (loyaltyProgress) {
-            const [fidelidade30Coupon] = await pool.query("SELECT id, code, description, type, value FROM coupons WHERE code = 'FIDELIDADE30'");
-            if (loyaltyProgress.fidelidade30_available && fidelidade30Coupon.length > 0) {
-                availableCoupons.push({ ...fidelidade30Coupon[0], value: parseFloat(fidelidade30Coupon[0].value) });
+            const fidelidade30Coupon = allActiveCoupons.find(c => c.code === 'FIDELIDADE30');
+            if (loyaltyProgress.fidelidade30_available && fidelidade30Coupon) {
+                finalCouponsList.push({ ...fidelidade30Coupon, value: parseFloat(fidelidade30Coupon.value) });
+                console.log('Backend: FIDELIDADE30 added to list.');
             }
-            const [brotoGratisCoupon] = await pool.query("SELECT id, code, description, type, value FROM coupons WHERE code = 'BROTOGRATIS'");
-            if (loyaltyProgress.brotogratis_available && brotoGratisCoupon.length > 0) {
-                availableCoupons.push({ ...brotogratisCoupon[0], value: parseFloat(brotogratisCoupon[0].value) });
+            const brotogratisCoupon = allActiveCoupons.find(c => c.code === 'BROTOGRATIS');
+            if (loyaltyProgress.brotogratis_available && brotogratisCoupon) {
+                finalCouponsList.push({ ...brotogratisCoupon, value: parseFloat(brotogratisCoupon.value) });
+                console.log('Backend: BROTOGRATIS added to list.');
             }
         }
         
-        res.json(availableCoupons);
+        res.json(finalCouponsList);
+
     } catch (error) {
         console.error('Erro ao buscar cupons:', error);
-        res.status(500).json({ message: 'Erro ao buscar cupons.' });
+        res.status(500).json({ message: 'Erro ao buscar cupons.', detail: error.sqlMessage || error.message });
+    } finally {
+        if (connection) connection.release();
     }
 });
 
@@ -468,14 +490,25 @@ app.post('/api/coupons/apply', authenticateToken, async (req, res) => {
             discountAmount = currentTotalPrice * (parseFloat(coupon.value) / 100);
             newTotalPrice = currentTotalPrice - discountAmount;
             message = `${parseFloat(coupon.value)}% de desconto aplicado!`;
-        } else if (coupon.type === 'free_item' && coupon.target_item_category === 'broto') {
-            const brotoItem = cartItems.find(item => item.item_size === 'broto');
-            if (brotoItem) {
-                discountAmount = brotoItem.item_price;
-                newTotalPrice = currentTotalPrice - discountAmount;
-                message = 'Pizza broto grátis aplicada!';
+        } else if (coupon.type === 'free_item') {
+            console.log('Backend - Applying Free Item Coupon. Coupon details:', coupon);
+            console.log('Backend - Cart items received:', cartItems);
+            
+            if (coupon.target_item_category === 'broto') {
+                const brotoItem = cartItems.find(item => {
+                    console.log('Backend - Checking item for broto (size property):', item.size, item);
+                    return item.size === 'broto';
+                });
+
+                if (brotoItem) {
+                    discountAmount = brotoItem.price;
+                    newTotalPrice = currentTotalPrice - discountAmount;
+                    message = 'Pizza broto grátis aplicada!';
+                } else {
+                    return res.status(400).json({ message: 'Cupom BROTOGRATIS exige uma pizza broto no carrinho.' });
+                }
             } else {
-                return res.status(400).json({ message: 'Cupom BROTOGRATIS exige uma pizza broto no carrinho.' });
+                return res.status(400).json({ message: `Cupom de item grátis inválido ou sem categoria alvo (${coupon.target_item_category}).` });
             }
         } else if (coupon.type === 'fixed') {
              discountAmount = parseFloat(coupon.value);
@@ -606,13 +639,24 @@ app.get('/api/orders/user/:userId', authenticateToken, async (req, res) => {
 
         for (let order of orders) {
             console.log(`Backend: Fetching items for Order ID: ${order.id}`);
-            const [items] = await pool.query('SELECT * FROM order_items WHERE order_id = ?', [order.id]);
+            const [items] = await pool.query(
+                `SELECT oi.*, p.name as product_name, p.description as product_description
+                 FROM order_items oi
+                 JOIN products p ON oi.product_id = p.id
+                 WHERE oi.order_id = ?`,
+                [order.id]
+            );
             
-            order.items = items.map(item => ({
-                ...item,
-                item_flavors: item.item_flavors || '', 
-                item_price: parseFloat(item.item_price)
-            }));
+            order.items = items.map(item => {
+                console.log('Backend: Processing order item:', item);
+                return {
+                    ...item,
+                    item_flavors: item.item_flavors || '',
+                    item_price: parseFloat(item.item_price),
+                    name: item.product_name,
+                    description: item.product_description
+                };
+            });
             order.total_price = parseFloat(order.total_price);
             console.log('Backend: Processed order with items:', order);
         }
@@ -622,7 +666,93 @@ app.get('/api/orders/user/:userId', authenticateToken, async (req, res) => {
         console.error('Erro ao buscar histórico de pedidos:', error);
         res.status(500).json({ message: 'Erro ao buscar histórico de pedidos.', detail: error.sqlMessage || error.message });
     } finally {
-        if (connection) connection.release(); 
+        if (connection) connection.release();
+    }
+});
+
+app.get('/api/orders', authenticateToken, authorizeRoles('admin'), async (req, res) => {
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        
+        const { last24h } = req.query;
+
+        let query = `
+            SELECT o.*, u.name as customer_name, a.nickname as address_nickname, a.street, a.number
+            FROM orders o
+            JOIN users u ON o.user_id = u.id
+            JOIN addresses a ON o.address_id = a.id
+        `;
+        let queryParams = [];
+
+        if (last24h === 'true') { 
+            const now = new Date();
+            const twentyFourHoursAgo = new Date(now.getTime() - (24 * 60 * 60 * 1000));
+            query += ` WHERE o.created_at >= ?`;
+            queryParams.push(twentyFourHoursAgo);
+            console.log(`Backend: Filtering orders created after ${twentyFourHoursAgo.toISOString()}`);
+        }
+
+        query += ` ORDER BY o.created_at DESC`;
+        
+        console.log('Backend: Fetching all orders for admin view.');
+        const [orders] = await connection.query(query, queryParams);
+        console.log('Backend: All orders found:', orders);
+
+        for (let order of orders) {
+            console.log(`Backend: Fetching items for Order ID: ${order.id}`);
+            const [items] = await connection.query(
+                `SELECT oi.*, p.name as product_name, p.description as product_description
+                 FROM order_items oi
+                 JOIN products p ON oi.product_id = p.id
+                 WHERE oi.order_id = ?`,
+                [order.id]
+            );
+            
+            order.items = items.map(item => ({
+                ...item,
+                item_flavors: item.item_flavors || '',
+                item_price: parseFloat(item.item_price),
+                name: item.product_name,
+                description: item.product_description
+            }));
+            order.total_price = parseFloat(order.total_price);
+            order.user_id = parseInt(order.user_id);
+            order.address_id = parseInt(order.address_id);
+        }
+
+        res.json(orders);
+    } catch (error) {
+        console.error('Erro ao buscar todos os pedidos para admin:', error);
+        res.status(500).json({ message: 'Erro ao buscar todos os pedidos.', detail: error.sqlMessage || error.message });
+    } finally {
+        if (connection) connection.release();
+    }
+});
+
+app.put('/api/orders/:id/status', authenticateToken, authorizeRoles('admin'), async (req, res) => {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const validStatuses = ['pending', 'confirmed', 'preparing', 'on_the_way', 'delivered', 'cancelled', 'refunded'];
+    if (!status || !validStatuses.includes(status)) {
+        return res.status(400).json({ message: 'Status inválido fornecido.' });
+    }
+
+    let connection;
+    try {
+        connection = await pool.getConnection();
+        const [result] = await connection.query('UPDATE orders SET status = ? WHERE id = ?', [status, id]);
+        
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ message: 'Pedido não encontrado ou status já atualizado.' });
+        }
+        res.json({ message: `Status do pedido ${id} atualizado para ${status} com sucesso!` });
+    } catch (error) {
+        console.error(`Erro ao atualizar status do pedido ${id} para ${status}:`, error);
+        res.status(500).json({ message: 'Erro ao atualizar status do pedido.', detail: error.sqlMessage || error.message });
+    } finally {
+        if (connection) connection.release();
     }
 });
 

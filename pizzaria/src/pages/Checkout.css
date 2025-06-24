@@ -31,7 +31,7 @@
 .form-section legend {
   font-size: 1.5em;
   font-weight: bold;
-  color: #e44d26;
+  color: #dc3545;
   padding: 0 10px;
   margin-bottom: 20px;
 }
@@ -64,7 +64,7 @@
 .form-group select:focus,
 .form-group textarea:focus {
   outline: none;
-  border-color: #e44d26;
+  border-color: #dc3545;
   box-shadow: 0 0 0 3px rgba(228, 77, 38, 0.2);
 }
 
@@ -96,30 +96,36 @@
   justify-content: space-between;
   font-size: 1.5em;
   font-weight: bold;
-  color: #e44d26;
+  color: #dc3545;
   margin-top: 20px;
 }
 
 .cupom-section {
-    display: flex;
-    align-items: flex-end;
+    display: flex; 
+    align-items: center;
     gap: 10px;
     margin-top: 20px;
     margin-bottom: 15px;
     padding-top: 15px;
     border-top: 1px dashed #ccc;
+    flex-wrap: wrap;
 }
+
 .cupom-section label {
     flex-shrink: 0;
     margin-bottom: 0;
     line-height: 1.2;
+    font-weight: bold;
+    color: #333;
 }
+
 .cupom-section input {
     flex-grow: 1;
     margin-bottom: 0;
+    max-width: 250px;
 }
 .apply-cupom-button {
-    background-color: #e44d26;
+    background-color: #dc3545;
     color: white;
     padding: 8px 15px;
     border: none;
@@ -130,16 +136,25 @@
     flex-shrink: 0;
 }
 .apply-cupom-button:hover {
-    background-color: #c0392b;
+    background-color: #c82333;
 }
 .cupom-message {
     font-size: 0.85em;
-    margin-top: 5px;
-    margin-left: auto;
-    margin-right: 0;
-    color: #28a745; 
+    margin-top: 5px; 
+    margin-left: 0;
+    width: 100%;
+    text-align: left;
+    padding: 5px 0;
+    box-sizing: border-box;
 }
-
+.cupom-message.success {
+    color: #28a745;
+    font-weight: bold;
+}
+.cupom-message.error {
+    color: #dc3545;
+    font-weight: bold;
+}
 .app-payment-options h4 {
     font-size: 1.2em;
     color: #555;
@@ -155,15 +170,25 @@
 .new-address-form-fields h4,
 .new-card-form-fields h4 {
     font-size: 1.1em;
-    color: #e44d26;
+    color: #dc3545;
     margin-bottom: 15px;
 }
 .new-address-form-fields .submit-button,
 .new-card-form-fields .submit-button {
-    width: auto;
-    display: block;
-    margin-left: auto; 
-    margin-right: 0;
+    background-color: #dc3545;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+    margin-top: 15px;
+    margin-right: 10px;
+}
+.new-address-form-fields .submit-button:hover,
+.new-card-form-fields .submit-button:hover {
+    background-color: #c82333;
 }
 .add-link {
     color: #007bff;
@@ -290,17 +315,21 @@
     flex-direction: column;
     align-items: stretch;
   }
-  .cupom-section label, .cupom-section input, .apply-cupom-button {
+  .cupom-section label, 
+  .cupom-section input, 
+  .apply-cupom-button {
     width: 100%;
+    margin-bottom: 10px;
+  }
+  .cupom-section input {
+      max-width: none; 
+  }
+  .apply-cupom-button {
+      margin-bottom: 0;
   }
   .cupom-message {
-    margin-left: 0;
-    margin-right: auto;
-    text-align: left;
-  }
-  .add-link {
-      display: block;
       margin-top: 10px;
+      text-align: center; 
   }
 }
 

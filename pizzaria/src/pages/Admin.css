@@ -49,7 +49,7 @@
 }
 
 .admin-access-denied button {
-  background-color: #e44d26;
+  background-color: #dc3545;
   color: white;
   padding: 12px 25px;
   border: none;
@@ -60,7 +60,7 @@
 }
 
 .admin-access-denied button:hover {
-  background-color: #c0392b;
+  background-color: #c82333;
 }
 
 .product-form-section {
@@ -109,7 +109,7 @@
 .product-form input:focus,
 .product-form textarea:focus {
   outline: none;
-  border-color: #e44d26;
+  border-color: #dc3545;
   box-shadow: 0 0 0 3px rgba(228, 77, 38, 0.2);
 }
 
@@ -125,12 +125,12 @@
 }
 
 .action-button.primary {
-  background-color: #e44d26;
+  background-color: #dc3545;
   color: white;
 }
 
 .action-button.primary:hover {
-  background-color: #c0392b;
+  background-color: #c82333;
   transform: translateY(-2px);
 }
 
